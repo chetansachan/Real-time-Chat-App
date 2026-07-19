@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+coverage/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+logs/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# prisma local artifacts
+backend/prisma/dev.db
+
+# commit automation scripts
+generate_commits.ps1
+generate_commits.js
+
