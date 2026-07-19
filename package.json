@@ -1,0 +1,32 @@
+{
+  "name": "chat-app",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @chat/backend start:dev",
+    "dev:web": "pnpm --filter @chat/frontend dev",
+    "build": "pnpm --filter @chat/backend build && pnpm --filter @chat/frontend build",
+    "build:api": "pnpm --filter @chat/backend build",
+    "build:web": "pnpm --filter @chat/frontend build",
+    "typecheck": "pnpm --filter @chat/backend typecheck && pnpm --filter @chat/frontend typecheck",
+    "typecheck:api": "pnpm --filter @chat/backend typecheck",
+    "typecheck:web": "pnpm --filter @chat/frontend typecheck",
+    "lint": "pnpm --filter @chat/backend lint && pnpm --filter @chat/frontend lint",
+    "lint:api": "pnpm --filter @chat/backend lint",
+    "lint:web": "pnpm --filter @chat/frontend lint",
+    "test": "pnpm --filter @chat/backend test && pnpm --filter @chat/frontend test",
+    "test:api": "pnpm --filter @chat/backend test",
+    "test:web": "pnpm --filter @chat/frontend test",
+    "format": "pnpm --filter @chat/backend format && pnpm --filter @chat/frontend format",
+    "db:generate": "pnpm --filter @chat/backend prisma:generate",
+    "db:migrate": "pnpm --filter @chat/backend prisma:migrate",
+    "db:deploy": "pnpm --filter @chat/backend prisma:deploy",
+    "db:seed": "pnpm --filter @chat/backend seed",
+    "smoke": "pnpm --filter @chat/backend smoke",
+    "smoke:multi": "pnpm --filter @chat/backend smoke:multi"
+  }
+}
