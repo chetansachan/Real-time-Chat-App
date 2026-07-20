@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoomType {
+  PUBLIC
+  PRIVATE
+  DIRECT
+}
+
+enum MemberRole {
+  OWNER
+  MEMBER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+model User {
+  id           String   @id
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+
+  memberships   RoomMember[]
+  messages      Message[]
+  ownedRooms    Room[]         @relation("RoomOwner")
+  refreshTokens RefreshToken[]
+  bans          RoomBan[]
+}
+
+model Room {
+  id            String   @id
+  type          RoomType
+  name          String?
+  ownerId       String?
+  owner         User?    @relation("RoomOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  directKey     String?  @unique
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  members  RoomMember[]
+  messages Message[]
+  bans     RoomBan[]
+
+  @@index([type, id(sort: Desc)])
+  @@index([lastMessageAt(sort: Desc)])
+}
+
+model RoomMember {
+  roomId            String
+  userId            String
+  room              Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role              MemberRole @default(MEMBER)
+  joinedAt          DateTime   @default(now())
+  mutedUntil        DateTime?
+  lastReadMessageId String?
+
+  @@id([roomId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id              String      @id
+  roomId          String
+  room            Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content         String
+  type            MessageType @default(TEXT)
+  clientMessageId String
+  createdAt       DateTime    @default(now())
+  deletedAt       DateTime?
+
+  @@unique([senderId, clientMessageId])
+  @@index([roomId, id(sort: Desc)])
+}
+
+model RoomBan {
+  roomId    String
+  userId    String
+  room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@id([roomId, userId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id           String    @id
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
